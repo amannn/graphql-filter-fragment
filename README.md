@@ -40,4 +40,4 @@ This utility function is helpful to [remove read-only fields before mutations](h
 
 ## Credits
 
-All credits goes to the [`graphql-anywhere` package](https://www.npmjs.com/package/graphql-anywhere) which is unfortunately not maintained anymore and the utilities no longer included in recent `@apollo/client` versions. The code in this repo is a direct copy-paste from the original code with an updated peer dependency version of `graphql`.
+All credit goes to the [`graphql-anywhere` package](https://www.npmjs.com/package/graphql-anywhere) which is unfortunately not maintained anymore and the utilities no longer included in recent `@apollo/client` versions. The code in this repo is a direct copy-paste from the original code with an updated peer dependency version of `graphql`.
