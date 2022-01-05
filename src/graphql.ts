@@ -1,23 +1,22 @@
 import {
+  getMainDefinition,
+  getFragmentDefinitions,
+  createFragmentMap,
+  FragmentMap,
+  DirectiveInfo,
+  shouldInclude,
+  isField,
+  isInlineFragment,
+  resultKeyNameFromField,
+  argumentsObjectFromField
+} from '@apollo/client/utilities';
+import {
   DocumentNode,
   SelectionSetNode,
   FieldNode,
   FragmentDefinitionNode,
   InlineFragmentNode
 } from 'graphql';
-import {shouldInclude} from './directives';
-import {
-  getMainDefinition,
-  getFragmentDefinitions,
-  createFragmentMap,
-  FragmentMap
-} from './getFromAST';
-import {
-  isField,
-  isInlineFragment,
-  resultKeyNameFromField,
-  argumentsObjectFromField
-} from './storeUtils';
 
 export type Resolver = (
   fieldName: string,
@@ -51,6 +50,8 @@ export type ExecContext = {
 export type ExecInfo = {
   isLeaf: boolean;
   resultKey: string;
+  directives: DirectiveInfo;
+  field: FieldNode;
 };
 
 export type ExecOptions = {
@@ -58,27 +59,34 @@ export type ExecOptions = {
   fragmentMatcher?: FragmentMatcher;
 };
 
-// Based on graphql function from graphql-js:
-// graphql(
-//   schema: GraphQLSchema,
-//   requestString: string,
-//   rootValue?: ?any,
-//   contextValue?: ?any,
-//   variableValues?: ?{[key: string]: any},
-//   operationName?: ?string
-// ): Promise<GraphQLResult>
+/* Based on graphql function from graphql-js:
+ *
+ * graphql(
+ *   schema: GraphQLSchema,
+ *   requestString: string,
+ *   rootValue?: ?any,
+ *   contextValue?: ?any,
+ *   variableValues?: ?{[key: string]: any},
+ *   operationName?: ?string
+ * ): Promise<GraphQLResult>
+ *
+ * The default export as of graphql-anywhere is sync as of 4.0,
+ * but below is an exported alternative that is async.
+ * In the 5.0 version, this will be the only export again
+ * and it will be async
+ */
 export function graphql(
   resolver: Resolver,
   document: DocumentNode,
   rootValue?: any,
   contextValue?: any,
-  variableValues?: VariableMap,
+  variableValues: VariableMap = {},
   execOptions: ExecOptions = {}
 ) {
   const mainDefinition = getMainDefinition(document);
 
   const fragments = getFragmentDefinitions(document);
-  const fragmentMap = createFragmentMap(fragments) || {};
+  const fragmentMap = createFragmentMap(fragments);
 
   const resultMapper = execOptions.resultMapper;
 
@@ -106,13 +114,13 @@ function executeSelectionSet(
   rootValue: any,
   execContext: ExecContext
 ) {
-  const {contextValue, fragmentMap, variableValues: variables} = execContext;
+  const {fragmentMap, contextValue, variableValues: variables} = execContext;
 
   const result = {};
 
   selectionSet.selections.forEach((selection) => {
-    if (!shouldInclude(selection, variables)) {
-      // Skip this entirely
+    if (variables && !shouldInclude(selection, variables)) {
+      // Skip selection sets which we're able to determine should not be run
       return;
     }
 
@@ -122,7 +130,11 @@ function executeSelectionSet(
       const resultFieldKey = resultKeyNameFromField(selection);
 
       if (fieldResult !== undefined) {
-        result[resultFieldKey] = fieldResult;
+        if (result[resultFieldKey] === undefined) {
+          result[resultFieldKey] = fieldResult;
+        } else {
+          merge(result[resultFieldKey], fieldResult);
+        }
       }
     } else {
       let fragment: InlineFragmentNode | FragmentDefinitionNode;
@@ -164,14 +176,18 @@ function executeField(
   rootValue: any,
   execContext: ExecContext
 ): any {
-  const {contextValue, resolver, variableValues: variables} = execContext;
+  const {variableValues: variables, contextValue, resolver} = execContext;
 
   const fieldName = field.name.value;
   const args = argumentsObjectFromField(field, variables);
 
   const info: ExecInfo = {
     isLeaf: !field.selectionSet,
-    resultKey: resultKeyNameFromField(field)
+    resultKey: resultKeyNameFromField(field),
+    // Originally directive info was extracted here, but I'm not
+    // sure where this utility has moved in Apollo core.
+    directives: {},
+    field
   };
 
   const result = resolver(fieldName, rootValue, args, contextValue, info);
@@ -183,7 +199,7 @@ function executeField(
 
   // From here down, the field has a selection set, which means it's trying to
   // query a GraphQLObjectType
-  if (result === null || typeof result === 'undefined') {
+  if (result == null) {
     // Basically any field in a GraphQL response can be null, or missing
     return result;
   }
@@ -213,29 +229,17 @@ function executeSubSelectedArray(field, result, execContext) {
   });
 }
 
-function merge(dest, src) {
-  if (
-    src === null ||
-    typeof src === 'undefined' ||
-    typeof src === 'string' ||
-    typeof src === 'number' ||
-    typeof src === 'boolean'
-  ) {
-    // These types just override whatever was in dest
-    return src;
+const hasOwn = Object.prototype.hasOwnProperty;
+
+export function merge(dest, src) {
+  if (src !== null && typeof src === 'object') {
+    Object.keys(src).forEach((key) => {
+      const srcVal = src[key];
+      if (!hasOwn.call(dest, key)) {
+        dest[key] = srcVal;
+      } else {
+        merge(dest[key], srcVal);
+      }
+    });
   }
-
-  // Merge sub-objects
-  Object.keys(dest).forEach((destKey) => {
-    if (src.hasOwnProperty(destKey)) {
-      merge(dest[destKey], src[destKey]);
-    }
-  });
-
-  // Add props only on src
-  Object.keys(src).forEach((srcKey) => {
-    if (!dest.hasOwnProperty(srcKey)) {
-      dest[srcKey] = src[srcKey];
-    }
-  });
 }

@@ -27,3 +27,35 @@ it('removes unwanted properties', () => {
     }
   });
 });
+
+it('considers a nested fragment', () => {
+  const result = filterGraphQlFragment(
+    gql`
+      fragment MainFragment on Entity {
+        ...NestedFragment
+        items {
+          operation
+        }
+      }
+
+      fragment NestedFragment on Entity {
+        items {
+          id
+        }
+      }
+    `,
+    {
+      items: [
+        {
+          id: '2',
+          operation: 'add',
+          versionNumber: undefined
+        }
+      ]
+    }
+  );
+
+  expect(result).toEqual({
+    items: [{id: '2', operation: 'add'}]
+  });
+});

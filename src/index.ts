@@ -1,13 +1,26 @@
 import {DocumentNode} from 'graphql';
-import {graphql} from './graphql';
+import {graphql, VariableMap, ExecInfo, ExecContext} from './graphql';
 
-export default function filterGraphQlFragment(
+export default function filterGraphQlFragment<FD = any, D extends FD = any>(
   doc: DocumentNode,
-  data: any
-): any {
-  function resolver(_: string, root: any, __: any, ___: any, info: any) {
+  data: D,
+  variableValues: VariableMap = {}
+): FD {
+  if (data === null) return data;
+
+  function resolver(
+    _: string,
+    root: any,
+    __: any,
+    ___: ExecContext,
+    info: ExecInfo
+  ) {
     return root[info.resultKey];
   }
 
-  return graphql(resolver, doc, data);
+  return Array.isArray(data)
+    ? data.map((dataObj) =>
+        graphql(resolver, doc, dataObj, null, variableValues)
+      )
+    : graphql(resolver, doc, data, null, variableValues);
 }
