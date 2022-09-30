@@ -5,7 +5,7 @@ Filters a data structure by a GraphQL fragment.
 ## Example
 
 ```js
-import {filterGraphQlFragment} from 'graphql-filter-fragment';
+import filterGraphQlFragment from 'graphql-filter-fragment';
 import {gql} from '@apollo/client/core';
 
 const result = filterGraphQlFragment(
