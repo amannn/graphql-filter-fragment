@@ -1,7 +1,7 @@
 {
   "name": "graphql-filter-fragment",
   "description": "Filters a data structure by a GraphQL fragment",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "license": "MIT",
   "author": "Jan Amann <jan@amann.me>",
   "homepage": "https://github.com/amannn/graphql-filter-fragment",
