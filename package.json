@@ -4,6 +4,7 @@
   "version": "1.0.2",
   "license": "MIT",
   "author": "Jan Amann <jan@amann.me>",
+  "homepage": "https://github.com/amannn/graphql-filter-fragment",
   "scripts": {
     "start": "dts watch",
     "build": "dts build",
@@ -12,7 +13,7 @@
     "prepare": "dts build"
   },
   "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "types": "dist/types/index.d.ts",
   "module": "dist/graphql-filter-fragment.esm.js",
   "files": [
     "dist",
