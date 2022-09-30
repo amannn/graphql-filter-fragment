@@ -7,13 +7,13 @@
   "homepage": "https://github.com/amannn/graphql-filter-fragment",
   "scripts": {
     "start": "dts watch",
-    "build": "dts build",
+    "build": "rm -rf dist && dts build && mv -v dist/types/src/* dist",
     "test": "dts test",
     "lint": "eslint src test",
-    "prepare": "dts build"
+    "prepare": "yarn build"
   },
   "main": "dist/index.js",
-  "types": "dist/types/index.d.ts",
+  "types": "dist/index.d.ts",
   "module": "dist/graphql-filter-fragment.esm.js",
   "files": [
     "dist",
