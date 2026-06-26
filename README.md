@@ -6,17 +6,17 @@ Filters a data structure by a GraphQL fragment.
 
 ```js
 import filterGraphQlFragment from 'graphql-filter-fragment';
-import {gql} from '@apollo/client/core';
+import {parse} from 'graphql';
 
 const result = filterGraphQlFragment(
-  gql`
+  parse(`
     fragment museum on Museum {
       name
       address {
         city
       }
     }
-  `,
+  `),
   {
     name: 'Museum of Popular Culture',
     address: {
@@ -40,4 +40,4 @@ This utility function is helpful to [remove read-only fields before mutations](h
 
 ## Credits
 
-All credit goes to the [`graphql-anywhere` package](https://www.npmjs.com/package/graphql-anywhere) which is unfortunately not maintained anymore and the utilities no longer included in recent `@apollo/client` versions. The code in this repo is a direct copy-paste from the original code with an updated peer dependency version of `graphql`.
+All credit goes to the [`graphql-anywhere` package](https://www.npmjs.com/package/graphql-anywhere) which is unfortunately not maintained anymore and the utilities no longer included in recent `@apollo/client` versions. The code in this repo is based on the original code with an updated peer dependency version of `graphql`. The GraphQL AST helpers (previously imported from `@apollo/client/utilities`) are now inlined, so the only peer dependency is `graphql`.

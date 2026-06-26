@@ -1,4 +1,11 @@
 import {
+  DocumentNode,
+  SelectionSetNode,
+  FieldNode,
+  FragmentDefinitionNode,
+  InlineFragmentNode
+} from 'graphql';
+import {
   getMainDefinition,
   getFragmentDefinitions,
   createFragmentMap,
@@ -9,14 +16,7 @@ import {
   isInlineFragment,
   resultKeyNameFromField,
   argumentsObjectFromField
-} from '@apollo/client/utilities';
-import {
-  DocumentNode,
-  SelectionSetNode,
-  FieldNode,
-  FragmentDefinitionNode,
-  InlineFragmentNode
-} from 'graphql';
+} from './graphqlUtilities';
 
 export type Resolver = (
   fieldName: string,
