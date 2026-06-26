@@ -9,7 +9,13 @@
  * import when `@apollo/client` is not installed.
  *
  * The implementations follow the original `graphql-anywhere`/`apollo-utilities`
- * behaviour (MIT licensed, same as this package).
+ * behaviour (MIT licensed, same as this package) and are behaviourally
+ * identical for valid inputs. Intentional deviations:
+ *   - Errors are thrown as plain `Error` instead of Apollo's `InvariantError`.
+ *   - `getMainDefinition` does not run Apollo's `checkDocument` validation
+ *     (it still throws if no query/mutation/subscription/fragment is present).
+ *   - `valueToObjectRepresentation` uses a `switch` and a shorter "not
+ *     supported" message; the per-kind output is unchanged.
  */
 import {
   ArgumentNode,
@@ -49,7 +55,12 @@ export function getMainDefinition(
   let fragmentDefinition: FragmentDefinitionNode | undefined;
 
   for (const definition of queryDoc.definitions) {
-    if (definition.kind === Kind.OPERATION_DEFINITION) {
+    if (
+      definition.kind === Kind.OPERATION_DEFINITION &&
+      (definition.operation === 'query' ||
+        definition.operation === 'mutation' ||
+        definition.operation === 'subscription')
+    ) {
       return definition;
     }
 
