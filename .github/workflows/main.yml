@@ -4,14 +4,21 @@ on:
     types: [opened, synchronize, reopened]
 jobs:
   build:
-    name: Build, lint, and test
+    name: Build, lint, and test (graphql ${{ matrix.graphql }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Both peer-supported majors are exercised. graphql 17 requires
+        # Node >=22, which is why the previous Node 14 pin was raised.
+        graphql: ['16', '17']
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 14.x
+          node-version: 22.x
       - uses: bahmutov/npm-install@v1
+      - run: yarn add --dev graphql@${{ matrix.graphql }}
       - run: yarn build
       - run: yarn lint
       - run: yarn test
