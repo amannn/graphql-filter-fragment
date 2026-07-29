@@ -6,11 +6,11 @@
   "author": "Jan Amann <jan@amann.me>",
   "homepage": "https://github.com/amannn/graphql-filter-fragment",
   "scripts": {
-    "start": "dts watch",
-    "build": "rm -rf dist && dts build",
-    "test": "dts test",
+    "build": "bunchee --sourcemap",
+    "test": "vitest run",
     "lint": "eslint src test",
-    "prepare": "yarn build"
+    "prepare": "yarn build",
+    "build:check": "attw --pack . --ignore-rules cjs-only-exports-default"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -26,12 +26,14 @@
     "graphql": "^16.0.0 || ^17.0.0"
   },
   "devDependencies": {
-    "dts-cli": "2.0.5",
+    "@arethetypeswrong/cli": "^0.18.5",
+    "bunchee": "6.12.2",
     "eslint": "7.4.0",
     "eslint-config-molindo": "5.0.1",
     "graphql": "17.0.2",
     "tslib": "2.3.1",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "vitest": "^4.1.10"
   },
   "engines": {
     "node": ">=10"
