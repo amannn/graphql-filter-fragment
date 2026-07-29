@@ -1,5 +1,5 @@
 import {DocumentNode} from 'graphql';
-import {graphql, VariableMap, ExecInfo, ExecContext} from './graphql';
+import {ExecContext, ExecInfo, VariableMap, graphql} from './graphql';
 
 export default function filterGraphQlFragment<FD = any, D extends FD = any>(
   doc: DocumentNode,

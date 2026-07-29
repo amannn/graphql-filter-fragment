@@ -8,11 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-      - uses: bahmutov/npm-install@v1
-      - run: yarn build
-      - run: yarn build:check
-      - run: yarn lint
-      - run: yarn test
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm build:check
+      - run: pnpm lint
+      - run: pnpm test

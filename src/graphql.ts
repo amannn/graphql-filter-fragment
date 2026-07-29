@@ -1,21 +1,21 @@
 import {
   DocumentNode,
-  SelectionSetNode,
   FieldNode,
   FragmentDefinitionNode,
-  InlineFragmentNode
+  InlineFragmentNode,
+  SelectionSetNode
 } from 'graphql';
 import {
-  getMainDefinition,
-  getFragmentDefinitions,
-  createFragmentMap,
-  FragmentMap,
   DirectiveInfo,
-  shouldInclude,
+  FragmentMap,
+  argumentsObjectFromField,
+  createFragmentMap,
+  getFragmentDefinitions,
+  getMainDefinition,
   isField,
   isInlineFragment,
   resultKeyNameFromField,
-  argumentsObjectFromField
+  shouldInclude
 } from './graphqlUtilities';
 
 export type Resolver = (

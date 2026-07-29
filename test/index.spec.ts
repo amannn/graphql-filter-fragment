@@ -1,4 +1,5 @@
 import {parse} from 'graphql';
+import {expect, it} from 'vitest';
 import filterGraphQlFragment from '../src';
 
 it('removes unwanted properties', () => {
