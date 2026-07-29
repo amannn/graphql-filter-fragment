@@ -3,7 +3,6 @@
   "compilerOptions": {
     "module": "esnext",
     "lib": ["esnext"],
-    "importHelpers": true,
     "declaration": true,
     "sourceMap": true,
     "rootDir": ".",
@@ -12,7 +11,7 @@
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "jsx": "react",
     "esModuleInterop": true,
     "skipLibCheck": true,

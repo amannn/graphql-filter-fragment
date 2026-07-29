@@ -139,7 +139,7 @@ function valueToObjectRepresentation(
       break;
     }
     case Kind.VARIABLE:
-      argObj[name.value] = (variables || {})[value.name.value];
+      argObj[name.value] = variables?.[value.name.value];
       break;
     case Kind.LIST:
       argObj[name.value] = value.values.map((listValue) => {
@@ -195,14 +195,14 @@ function getInclusionDirectives(
       const directiveArguments = directive.arguments;
       const directiveName = directive.name.value;
 
-      if (!directiveArguments || directiveArguments.length !== 1) {
+      if (directiveArguments?.length !== 1) {
         throw new Error(
           `Incorrect number of arguments for the @${directiveName} directive.`
         );
       }
 
       const ifArgument = directiveArguments[0];
-      if (!ifArgument.name || ifArgument.name.value !== 'if') {
+      if (ifArgument.name?.value !== 'if') {
         throw new Error(
           `Invalid argument for the @${directiveName} directive.`
         );
@@ -237,7 +237,7 @@ export function shouldInclude(
     let evaledValue = false;
 
     if (ifArgument.value.kind === Kind.VARIABLE) {
-      evaledValue = (variables || {})[ifArgument.value.name.value];
+      evaledValue = variables?.[ifArgument.value.name.value];
       if (evaledValue === undefined) {
         throw new Error(
           `Invalid variable referenced in @${directive.name.value} directive.`

@@ -1,16 +1,16 @@
 {
   "name": "graphql-filter-fragment",
   "description": "Filters a data structure by a GraphQL fragment",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "license": "MIT",
   "author": "Jan Amann <jan@amann.me>",
   "homepage": "https://github.com/amannn/graphql-filter-fragment",
   "scripts": {
-    "start": "dts watch",
-    "build": "rm -rf dist && dts build && mv -v dist/types/src/* dist",
-    "test": "dts test",
+    "build": "bunchee --sourcemap",
+    "test": "vitest run",
     "lint": "eslint src test",
-    "prepare": "yarn build"
+    "prepare": "pnpm build",
+    "build:check": "attw --pack . --ignore-rules cjs-only-exports-default"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -23,17 +23,24 @@
     "graphql"
   ],
   "peerDependencies": {
-    "graphql": "^16.0.0"
+    "graphql": "^16.0.0 || ^17.0.0"
   },
   "devDependencies": {
-    "dts-cli": "1.1.4",
-    "eslint": "7.4.0",
-    "eslint-config-molindo": "5.0.1",
-    "graphql": "16.2.0",
-    "tslib": "2.3.1",
-    "typescript": "4.5.4"
+    "@arethetypeswrong/cli": "^0.18.5",
+    "bunchee": "6.12.2",
+    "eslint": "9.39.5",
+    "eslint-config-molindo": "8.0.0",
+    "graphql": "17.0.2",
+    "typescript": "6.0.3",
+    "vitest": "^4.1.10"
   },
   "engines": {
     "node": ">=10"
+  },
+  "packageManager": "pnpm@10.32.1",
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "@swc/core"
+    ]
   }
 }
